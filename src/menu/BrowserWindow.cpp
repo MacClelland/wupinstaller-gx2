@@ -33,9 +33,9 @@ BrowserWindow::BrowserWindow(int w, int h, CFolderList * list)
     , minusImageData(Resources::GetImageData("minus.png"))
 	, plusImg(plusImageData)
 	, minusImg(minusImageData)
-	, plusTxt("Select All", 42, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f))
-	, minusTxt("Unselect All", 42, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f))
-	, installTxt("Install", 42, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f))
+	, plusTxt("'Un'Select All" , 40, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f))
+	, minusTxt("Refresh" , 40, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f))
+	, installTxt("Install", 40, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f))
     , touchTrigger(GuiTrigger::CHANNEL_1, GuiTrigger::VPAD_TOUCH)
     , buttonATrigger(GuiTrigger::CHANNEL_1, GuiTrigger::BUTTON_A, true)
     , buttonUpTrigger(GuiTrigger::CHANNEL_1, GuiTrigger::BUTTON_UP | GuiTrigger::STICK_L_UP, true)
@@ -61,13 +61,18 @@ BrowserWindow::BrowserWindow(int w, int h, CFolderList * list)
 		folderButtons[i].folderButtonCheckedImg = new GuiImage(buttonCheckedImageData);
 		folderButtons[i].folderButtonHighlightedImg = new GuiImage(buttonHighlightedImageData);
 		folderButtons[i].folderButton = new GuiButton(folderButtons[i].folderButtonImg->getWidth(), folderButtons[i].folderButtonImg->getHeight());
-		folderButtons[i].folderButtonText = new GuiText(folderList->GetName(i).c_str(), 42, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f));
 		
+		folderButtons[i].folderButtonText = new GuiText(folderList->GetName(i).c_str(), 42, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f));
 		folderButtons[i].folderButtonText->setMaxWidth(folderButtons[i].folderButtonImg->getWidth() - 70, GuiText::DOTTED);
 		folderButtons[i].folderButtonText->setPosition(35, 0);
 		
+		folderButtons[i].folderButtonTextOver = new GuiText(folderList->GetName(i).c_str(), 42, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f));
+		folderButtons[i].folderButtonTextOver->setMaxWidth(folderButtons[i].folderButtonImg->getWidth() - 94, GuiText::SCROLL_HORIZONTAL);
+		folderButtons[i].folderButtonTextOver->setPosition(35, 0);
+		
 		folderButtons[i].folderButton->setImageSelectOver(folderButtons[i].folderButtonHighlightedImg);
 		folderButtons[i].folderButton->setLabel(folderButtons[i].folderButtonText);
+		folderButtons[i].folderButton->setLabelOver(folderButtons[i].folderButtonTextOver);
 		folderButtons[i].folderButton->setSoundClick(buttonClickSound);
 		folderButtons[i].folderButton->setImage(folderButtons[i].folderButtonImg);
 		folderButtons[i].folderButton->setImageChecked(folderButtons[i].folderButtonCheckedImg);
@@ -153,6 +158,7 @@ BrowserWindow::~BrowserWindow()
         delete folderButtons[i].folderButtonHighlightedImg;
         delete folderButtons[i].folderButton;
         delete folderButtons[i].folderButtonText;
+        delete folderButtons[i].folderButtonTextOver;
     }
 	
 	folderButtons.clear();
@@ -254,19 +260,17 @@ void BrowserWindow::OnPlusButtonClick(GuiButton *button, const GuiController *co
 			folderList->Select(i);
 			folderButtons[i].folderButton->check();
 		}
-	}
-}
-
-void BrowserWindow::OnMinusButtonClick(GuiButton *button, const GuiController *controller, GuiTrigger *trigger)
-{
-	for(int i = 0; i < buttonCount; i++)
-	{
-		if(folderList->IsSelected(i))
+		else if(folderList->IsSelected(i))
 		{
 			folderList->UnSelect(i);
 			folderButtons[i].folderButton->check();
 		}
 	}
+}
+
+void BrowserWindow::OnMinusButtonClick(GuiButton *button, const GuiController *controller, GuiTrigger *trigger)
+{
+	SYSRelaunchTitle(0, 0);
 }
 
 void BrowserWindow::OnInstallButtonClick(GuiButton *button, const GuiController *controller, GuiTrigger *trigger)

@@ -20,6 +20,7 @@
 #include "gui/Gui.h"
 #include "gui/Scrollbar.h"
 #include "fs/CFolderList.hpp"
+#include <sysapp/launch.h>
 
 class BrowserWindow : public GuiFrame, public sigslot::has_slots<>
 {
@@ -90,6 +91,7 @@ private:
         GuiImage *folderButtonHighlightedImg;
         GuiButton *folderButton;
         GuiText *folderButtonText;
+        GuiText *folderButtonTextOver;
     } FolderButton;
 
     std::vector<FolderButton> folderButtons;
