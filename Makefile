@@ -42,7 +42,7 @@ SOURCES		:=	src \
 				src/system \
 				src/utils \
 				src/video \
-				src/video/shaders \
+				src/video/shaders
 DATA		:=	data \
 				data/images \
 				data/fonts \
@@ -66,7 +66,7 @@ MAKEFLAGS += --no-print-directory
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:= -lgcc -lgd -lpng -ljpeg -lz -lfreetype -lmad -lvorbisidec
+LIBS	:= -lgcc -lgd -lpng -lz -lfreetype -lmad -lvorbisidec
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -92,18 +92,15 @@ export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 #---------------------------------------------------------------------------------
 # automatically build a list of object files for our project
 #---------------------------------------------------------------------------------
-FILELIST		:=	$(shell bash ./filelist.sh)
-SVNREV			:=	$(shell bash ./svnrev.sh)
-export CFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-export CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
-export HFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.h)))
-sFILES			:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-SFILES			:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
-BINFILES		:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
-TTFFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.ttf)))
-PNGFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.png)))
-OGGFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.ogg)))
-MP3FILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.mp3)))
+FILELIST	:=	$(shell bash ./filelist.sh)
+SVNREV		:=	$(shell bash ./svnrev.sh)
+CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+sFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
+SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
+BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+TTFFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.ttf)))
+PNGFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.png)))
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -116,9 +113,7 @@ endif
 
 export OFILES	:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) \
 					$(sFILES:.s=.o) $(SFILES:.S=.o) \
-					$(PNGFILES:.png=.png.o) $(OGGFILES:.ogg=.ogg.o) \
-					$(MP3FILES:.mp3=.mp3.o) $(TTFFILES:.ttf=.ttf.o) \
-					$(addsuffix .o,$(BINFILES))
+					$(PNGFILES:.png=.png.o) $(addsuffix .o,$(BINFILES))
 
 #---------------------------------------------------------------------------------
 # build a list of include paths
@@ -132,9 +127,9 @@ export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 # build a list of library paths
 #---------------------------------------------------------------------------------
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
-					-L$(LIBOGC_LIB) -L$(PORTLIBS)/lib
+					-L$(PORTLIBS)/lib
 
-export OUTPUT		:=	$(CURDIR)/$(TARGET)
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
 .PHONY: $(BUILD) clean install
 
 #---------------------------------------------------------------------------------
@@ -145,12 +140,13 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).bin $(BUILD_DBG).elf $(CURDIR)/src/common/svnrev.c \
-			$(CURDIR)/meta/meta.xml $(CURDIR)/src/resources/filelist.h
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).bin $(BUILD_DBG).elf \
+			$(CURDIR)/src/common/svnrev.c $(CURDIR)/src/resources/filelist.h
 
 #---------------------------------------------------------------------------------
 run:
 	wiiload $(OUTPUT).elf
+
 #---------------------------------------------------------------------------------
 else
 
@@ -162,18 +158,12 @@ DEPENDS	:=	$(OFILES:.o=.d)
 $(OUTPUT).elf:  $(OFILES)
 
 #---------------------------------------------------------------------------------
-# Translation files
-#---------------------------------------------------------------------------------
-translations: $(wildcard $(PROJECTDIR)/languages/*.lang)
-
-#---------------------------------------------------------------------------------
 # This rule links in binary data with the .jpg extension
 #---------------------------------------------------------------------------------
 %.elf: link.ld $(OFILES)
 	@echo "linking ... $(TARGET).elf"
 	$(Q)$(LD) -n -T $^ $(LDFLAGS) -o ../$(BUILD_DBG).elf  $(LIBPATHS) $(LIBS)
 	$(Q)$(OBJCOPY) -S -R .comment -R .gnu.attributes ../$(BUILD_DBG).elf $@
-
 #---------------------------------------------------------------------------------
 %.a:
 #---------------------------------------------------------------------------------
@@ -230,8 +220,6 @@ translations: $(wildcard $(PROJECTDIR)/languages/*.lang)
 %.ogg.o : %.ogg
 	@echo $(notdir $<)
 	@bin2s -a 32 $< | $(AS) -o $(@)
-
-#---------------------------------------------------------------------------------
 
 -include $(DEPENDS)
 

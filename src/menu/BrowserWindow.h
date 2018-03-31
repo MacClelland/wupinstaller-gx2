@@ -28,6 +28,7 @@ public:
     virtual ~BrowserWindow();
 	
 	sigslot::signal1<GuiElement *> installButtonClicked;
+	sigslot::signal1<GuiElement *> minusButtonClicked;
 	
 private:
     int SearchSelectedButton();
@@ -79,7 +80,8 @@ private:
 	GuiButton minusButton;
 	GuiButton installButton;
 	
-    int currentYOffset;
+    int pageIndex;
+	int selectedItem;
 	int buttonCount;
 	
     typedef struct
@@ -89,6 +91,7 @@ private:
         GuiImage *folderButtonHighlightedImg;
         GuiButton *folderButton;
         GuiText *folderButtonText;
+        GuiText *folderButtonTextOver;
     } FolderButton;
 
     std::vector<FolderButton> folderButtons;
